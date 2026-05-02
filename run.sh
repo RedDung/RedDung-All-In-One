@@ -7,16 +7,6 @@ yellow='\033[0;33m'
 red='\033[0;31m'
 nc='\033[0m'
 
-# Hàm tự động kiểm tra và cài đặt công cụ thiếu
-check_tools() {
-    for tool in curl wget grep; do
-        if ! command -v $tool &> /dev/null; then
-            echo -e "${yellow}[!] Thiếu $tool, đang tự động cài đặt...${nc}"
-            pkg install $tool -y &> /dev/null
-        fi
-    done
-}
-
 while true; do
     clear
     echo -e "${cyan}=========================================="
@@ -33,14 +23,12 @@ while true; do
 
     case $opt in
         1)
-            check_tools
             echo -e "\n${green}[*] Đang tải Delta...${nc}"
             curl -s https://api.github.com/repos/RedDung/Delta-Clone/releases/tags/Clone_Roblox | grep "browser_download_url" | cut -d '"' -f 4 | grep ".apk" | wget -i - -q --show-progress
             mv *.apk /sdcard/Download/ 2>/dev/null
             echo -e "${green}--- Hoàn thành ---${nc}"
             ;;
         2)
-            check_tools
             echo -e "\n${green}[*] Đang tải Arceus X...${nc}"
             curl -s https://api.github.com/repos/RedDung/Arceus-Clone/releases/tags/Arceus_Clone | grep "browser_download_url" | cut -d '"' -f 4 | grep ".apk" | wget -i - -q --show-progress
             mv *.apk /sdcard/Download/ 2>/dev/null
@@ -48,7 +36,7 @@ while true; do
             ;;
         3)
             echo -e "\n${yellow}[*] Đang cài đặt tất cả APK...${nc}"
-            cd /sdcard/Download 2>/dev/null || termux-setup-storage
+            cd /sdcard/Download 2>/dev/null
             for apk in *.apk; do
                 [ -e "$apk" ] || continue
                 echo -e "${cyan}[>] Đang cài: $apk${nc}"
