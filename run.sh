@@ -12,10 +12,10 @@ while true; do
     echo -e "${cyan}=========================================="
     echo -e "            TOOL - BY REDDUNG             "
     echo -e "==========================================${nc}"
-    echo -e "${yellow}  [1]${nc} Auto tải Delta Executor"
-    echo -e "${yellow}  [2]${nc} Auto tải Arceus X"
-    echo -e "${yellow}  [3]${nc} Cài đặt APK (Thư mục Download)"
-    echo -e "${yellow}  [4]${nc} Kiểm tra IP / Dọn dẹp"
+    echo -e "${yellow}  [1]${nc} Auto tải Delta (Clone_Roblox)"
+    echo -e "${yellow}  [2]${nc} Auto tải Arceus X (Arceus_Clone)"
+    echo -e "${yellow}  [3]${nc} Cài đặt APK (Download folder)"
+    echo -e "${yellow}  [4]${nc} Cập nhật môi trường (Fix lỗi)"
     echo -e "${red}  [0]${nc} Thoát"
     echo -e "${cyan}==========================================${nc}"
     
@@ -23,50 +23,38 @@ while true; do
 
     case $opt in
         1)
-            echo -e "\n${green}[*] Đang tìm link Delta mới nhất...${nc}"
-            # Tự động lấy link từ repo Delta-Clone của bạn hoặc nguồn tương đương
-            link=$(curl -s https://api.github.com/repos/RedDung/Delta-Clone/releases/latest | grep "browser_download_url" | cut -d '"' -f 4)
-            if [ -z "$link" ]; then
-                echo -e "${red}[!] Không tìm thấy file!${nc}"
-            else
-                echo -e "${green}[+] Đang tải Delta về thư mục Download...${nc}"
-                curl -L "$link" -o /sdcard/Download/Delta_Latest.apk
-                echo -e "${green}[OK] Đã tải xong!${nc}"
-            fi
+            echo -e "\n${green}[*] Đang bế Delta về máy sếp...${nc}"
+            # Lệnh "đỉnh" của sếp đã được tích hợp:
+            curl -s https://api.github.com/repos/RedDung/Delta-Clone/releases/tags/Clone_Roblox | grep "browser_download_url" | cut -d '"' -f 4 | grep ".apk" | wget -i - -q --show-progress
+            mv *.apk /sdcard/Download/ 2>/dev/null
+            echo -e "${green}--- ĐÃ BẾ FILE SANG DOWNLOAD XONG! ---${nc}"
             ;;
         2)
-            echo -e "\n${green}[*] Đang tìm link Arceus X mới nhất...${nc}"
-            link=$(curl -s https://api.github.com/repos/RedDung/Arceus-Clone/releases/latest | grep "browser_download_url" | cut -d '"' -f 4)
-            if [ -z "$link" ]; then
-                echo -e "${red}[!] Không tìm thấy file!${nc}"
-            else
-                echo -e "${green}[+] Đang tải Arceus về thư mục Download...${nc}"
-                curl -L "$link" -o /sdcard/Download/Arceus_Latest.apk
-                echo -e "${green}[OK] Đã tải xong!${nc}"
-            fi
+            echo -e "\n${green}[*] Đang bế Arceus X về máy sếp...${nc}"
+            # Lệnh Arceus cũng dùng API tag cụ thể
+            curl -s https://api.github.com/repos/RedDung/Arceus-Clone/releases/tags/Arceus_Clone | grep "browser_download_url" | cut -d '"' -f 4 | grep ".apk" | wget -i - -q --show-progress
+            mv *.apk /sdcard/Download/ 2>/dev/null
+            echo -e "${green}--- ĐÃ BẾ FILE SANG DOWNLOAD XONG! ---${nc}"
             ;;
         3)
-            echo -e "\n${yellow}[*] Đang quét file APK trong thư mục Download...${nc}"
+            echo -e "\n${yellow}[*] Đang cài đặt tất cả APK trong Download...${nc}"
             cd /sdcard/Download
-            files=$(ls *.apk 2>/dev/null)
-            if [ -z "$files" ]; then
-                echo -e "${red}[!] Không có file APK nào để cài!${nc}"
-            else
-                for apk in $files; do
-                    echo -e "${cyan}[>] Đang cài: $apk...${nc}"
-                    su -c "pm install -r $apk"
-                done
-                echo -e "${green}[OK] Đã cài đặt xong tất cả!${nc}"
-            fi
+            for apk in *.apk; do
+                [ -e "$apk" ] || continue
+                echo -e "${cyan}[>] Đang cài: $apk${nc}"
+                su -c "pm install -r $apk"
+            done
             ;;
         4)
-            echo -e "\n${green}[*] IP hiện tại: $(curl -s ifconfig.me)${nc}"
-            echo -e "${yellow}[*] Đang dọn dẹp hệ thống...${nc}"
-            apt autoremove -y && apt clean
-            sleep 1
+            echo -e "\n${yellow}[*] Đang tối ưu hệ thống...${nc}"
+            export DEBIAN_FRONTEND=noninteractive
+            pkg update -y -o Dpkg::Options::="--force-confold"
+            pkg upgrade -y -o Dpkg::Options::="--force-confold"
+            pkg install curl wget grep -y
+            echo -e "${green}[OK] Môi trường đã sẵn sàng!${nc}"
             ;;
         0) exit 0 ;;
-        *) echo -e "\n${red}[!] Chọn sai rồi sếp!${nc}"; sleep 1 ;;
+        *) echo -e "\n${red}[!] Nhập sai rồi sếp!${nc}"; sleep 1 ;;
     esac
     
     echo -e "\n${yellow}>> Nhấn [Enter] để về Menu...${nc}"
