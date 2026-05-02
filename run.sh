@@ -10,7 +10,7 @@ nc='\033[0m'
 while true; do
     clear
     echo -e "${cyan}=========================================="
-    echo -e "       REJOICE TOOL - BY REDDUNG          "
+    echo -e "       TOOL - BY REDDUNG          "
     echo -e "==========================================${nc}"
     echo -e "${yellow}  [1]${nc} Cập nhật Tool/Tải Script"
     echo -e "${yellow}  [2]${nc} Kiểm tra IP mạng"
