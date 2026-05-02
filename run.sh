@@ -12,8 +12,8 @@ while true; do
     echo -e "${cyan}=========================================="
     echo -e "            TOOL - BY REDDUNG             "
     echo -e "==========================================${nc}"
-    echo -e "${yellow}  [1]${nc} Auto tải Delta"
-    echo -e "${yellow}  [2]${nc} Auto tải Arceus X"
+    echo -e "${yellow}  [1]${nc} Auto tải Delta (Giữ tên gốc)"
+    echo -e "${yellow}  [2]${nc} Auto tải Arceus X (Giữ tên gốc)"
     echo -e "${yellow}  [3]${nc} Cài đặt APK"
     echo -e "${yellow}  [4]${nc} Cập nhật môi trường"
     echo -e "${red}  [0]${nc} Thoát"
@@ -23,37 +23,43 @@ while true; do
 
     case $opt in
         1)
-            echo -e "\n${green}[*] Đang tải Delta...${nc}"
-            # Dọn rác cũ để tránh bị đẻ ra file .1, .2
-            rm -f delta_temp.apk 2>/dev/null
-            LINK=$(curl -s https://api.github.com/repos/RedDung/Delta-Clone/releases/tags/Clone_Roblox | grep "browser_download_url" | cut -d '"' -f 4 | grep ".apk" | head -n 1)
+            echo -e "\n${green}[*] Đang tải tất cả file từ Delta...${nc}"
+            # Chỉ xóa file apk ở thư mục hiện tại để tránh bị .1 .2 khi tải mới
+            rm -f *.apk 2>/dev/null
+            LINKS=$(curl -s https://api.github.com/repos/RedDung/Delta-Clone/releases/tags/Clone_Roblox | grep "browser_download_url" | grep ".apk" | cut -d '"' -f 4)
             
-            if [ -z "$LINK" ]; then
-                echo -e "${red}[!] Không lấy được link tải!${nc}"
+            if [ -z "$LINKS" ]; then
+                echo -e "${red}[!] Không tìm thấy file nào!${nc}"
             else
-                # -c: Tải tiếp nếu đứt mạng, --tries=0: Tải đến khi nào xong thì thôi
-                wget -c --tries=0 "$LINK" -q --show-progress -O delta_temp.apk
-                mv delta_temp.apk /sdcard/Download/delta.apk 2>/dev/null
-                echo -e "${green}--- Hoàn thành ---${nc}"
+                for link in $LINKS; do
+                    # Tải về giữ nguyên tên gốc, không đổi tên
+                    echo -e "${yellow}[>] Đang tải: $(basename "$link")${nc}"
+                    wget -c --tries=0 "$link" -q --show-progress
+                done
+                mv *.apk /sdcard/Download/ 2>/dev/null
+                echo -e "${green}--- Đã chuyển tất cả vào Download ---${nc}"
             fi
             ;;
         2)
-            echo -e "\n${green}[*] Đang tải Arceus X...${nc}"
-            rm -f arceus_temp.apk 2>/dev/null
-            LINK=$(curl -s https://api.github.com/repos/RedDung/Arceus-Clone/releases/tags/Arceus_Clone | grep "browser_download_url" | cut -d '"' -f 4 | grep ".apk" | head -n 1)
+            echo -e "\n${green}[*] Đang tải tất cả file từ Arceus X...${nc}"
+            rm -f *.apk 2>/dev/null
+            LINKS=$(curl -s https://api.github.com/repos/RedDung/Arceus-Clone/releases/tags/Arceus_Clone | grep "browser_download_url" | grep ".apk" | cut -d '"' -f 4)
             
-            if [ -z "$LINK" ]; then
-                echo -e "${red}[!] Không lấy được link tải!${nc}"
+            if [ -z "$LINKS" ]; then
+                echo -e "${red}[!] Không tìm thấy file nào!${nc}"
             else
-                wget -c --tries=0 "$LINK" -q --show-progress -O arceus_temp.apk
-                mv arceus_temp.apk /sdcard/Download/arceus.apk 2>/dev/null
-                echo -e "${green}--- Hoàn thành ---${nc}"
+                for link in $LINKS; do
+                    echo -e "${yellow}[>] Đang tải: $(basename "$link")${nc}"
+                    wget -c --tries=0 "$link" -q --show-progress
+                done
+                mv *.apk /sdcard/Download/ 2>/dev/null
+                echo -e "${green}--- Đã chuyển tất cả vào Download ---${nc}"
             fi
             ;;
         3)
-            echo -e "\n${yellow}[*] Đang cài đặt tất cả APK...${nc}"
+            echo -e "\n${yellow}[*] Bắt đầu cài đặt tất cả APK...${nc}"
             cd /sdcard/Download/ 2>/dev/null || termux-setup-storage
-            # Dọn sạch mấy file rác .1 .2 lỗi trước khi cài
+            # Xóa mấy cái đuôi .1 .2 nếu sếp lỡ tay tải thủ công bị trùng
             rm -f *.apk.1 *.apk.2 2>/dev/null
             
             for f in *.apk; do
@@ -61,10 +67,11 @@ while true; do
                     echo -e "${cyan}--------------------------------"
                     echo -e "[>] Đang ép cài đặt: $f${nc}"
                     path=$(realpath "$f")
+                    # Cài đặt bất chấp dung lượng lớn hay nhỏ
                     su -c "cp '$path' /data/local/tmp/t.apk && pm install -r -d --user 0 /data/local/tmp/t.apk && rm /data/local/tmp/t.apk"
                 fi
             done
-            echo -e "\n${green}[!] Hoàn thành!${nc}"
+            echo -e "\n${green}[!] Xong rồi sếp ơi!${nc}"
             ;;
         4)
             echo -e "\n${yellow}[*] Đang tối ưu hệ thống...${nc}"
