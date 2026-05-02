@@ -22,10 +22,10 @@ while true; do
     echo -e "${cyan}=========================================="
     echo -e "            TOOL - BY REDDUNG             "
     echo -e "==========================================${nc}"
-    echo -e "${yellow}  [1]${nc} Auto tải Delta (Clone_Roblox)"
-    echo -e "${yellow}  [2]${nc} Auto tải Arceus X (Arceus_Clone)"
-    echo -e "${yellow}  [3]${nc} Cài đặt APK (Download folder)"
-    echo -e "${yellow}  [4]${nc} Cập nhật môi trường (Fix lỗi)"
+    echo -e "${yellow}  [1]${nc} Auto tải Delta"
+    echo -e "${yellow}  [2]${nc} Auto tải Arceus X"
+    echo -e "${yellow}  [3]${nc} Cài đặt APK"
+    echo -e "${yellow}  [4]${nc} Cập nhật môi trường"
     echo -e "${red}  [0]${nc} Thoát"
     echo -e "${cyan}==========================================${nc}"
     
@@ -34,20 +34,20 @@ while true; do
     case $opt in
         1)
             check_tools
-            echo -e "\n${green}[*] Đang bế Delta về máy sếp...${nc}"
+            echo -e "\n${green}[*] Đang tải Delta...${nc}"
             curl -s https://api.github.com/repos/RedDung/Delta-Clone/releases/tags/Clone_Roblox | grep "browser_download_url" | cut -d '"' -f 4 | grep ".apk" | wget -i - -q --show-progress
             mv *.apk /sdcard/Download/ 2>/dev/null
-            echo -e "${green}--- ĐÃ BẾ FILE SANG DOWNLOAD XONG! ---${nc}"
+            echo -e "${green}--- Hoàn thành ---${nc}"
             ;;
         2)
             check_tools
-            echo -e "\n${green}[*] Đang bế Arceus X về máy sếp...${nc}"
+            echo -e "\n${green}[*] Đang tải Arceus X...${nc}"
             curl -s https://api.github.com/repos/RedDung/Arceus-Clone/releases/tags/Arceus_Clone | grep "browser_download_url" | cut -d '"' -f 4 | grep ".apk" | wget -i - -q --show-progress
             mv *.apk /sdcard/Download/ 2>/dev/null
-            echo -e "${green}--- ĐÃ BẾ FILE SANG DOWNLOAD XONG! ---${nc}"
+            echo -e "${green}--- Hoàn thành ---${nc}"
             ;;
         3)
-            echo -e "\n${yellow}[*] Đang cài đặt tất cả APK trong Download...${nc}"
+            echo -e "\n${yellow}[*] Đang cài đặt tất cả APK...${nc}"
             cd /sdcard/Download 2>/dev/null || termux-setup-storage
             for apk in *.apk; do
                 [ -e "$apk" ] || continue
