@@ -16,6 +16,7 @@ while true; do
     echo -e "${yellow}  [2]${nc} Auto tải Arceus X"
     echo -e "${yellow}  [3]${nc} Cài đặt APK"
     echo -e "${yellow}  [4]${nc} Cập nhật môi trường"
+    echo -e "${yellow}  [5]${nc} Tải APK từ Link URLVN"
     echo -e "${red}  [0]${nc} Thoát"
     echo -e "${cyan}==========================================${nc}"
     
@@ -75,6 +76,16 @@ while true; do
             pkg install curl wget grep coreutils -y
             echo -e "${green}[OK] Đã sẵn sàng!${nc}"
             ;;
+        5)
+            echo -e "\n${green}[*] Đang tải file từ URLVN...${nc}"
+            rm -f *.apk 2>/dev/null
+            # Tải file âm thầm và hiện thanh tiến trình
+            wget -c --content-disposition "https://urlvn.net/apnnt1v" -q --show-progress
+            
+            # Sau khi tải xong thì đưa vào Download để lệnh số 3 có thể cài
+            mv *.apk /sdcard/Download/ 2>/dev/null
+            echo -e "${green}--- Tải thành công! File đã nằm trong Download ---${nc}"
+            ;;
         0) exit 0 ;;
         *) echo -e "\n${red}[!] Nhập sai rồi sếp!${nc}"; sleep 1 ;;
     esac
@@ -82,3 +93,4 @@ while true; do
     echo -e "\n${yellow}>> Nhấn [Enter] để về Menu...${nc}"
     read < /dev/tty
 done
+
