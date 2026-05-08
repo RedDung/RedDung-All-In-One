@@ -72,40 +72,48 @@ while true; do
             echo -e "${green}--- Tải thành công! File đã nằm trong Download ---${nc}"
             ;;
         6)
-            echo -e "\n${cyan}--- ĐANG KIỂM TRA COOKIE TỪ FILE TRONG DOWNLOAD ---${nc}"
+            echo -e "\n${cyan}--- ĐANG QUÉT COOKIE TỪ THƯ MỤC DOWNLOAD ---${nc}"
             FILE_PATH="/sdcard/Download/check_cookie.txt"
+            
             if [ ! -f "$FILE_PATH" ]; then
-                echo -e "${red}[!] Không thấy file check_cookie.txt trong thư mục Download!${nc}"
+                echo -e "${red}[!] Không thấy file check_cookie.txt trong Download!${nc}"
             else
-                # Tạo file python tạm thời để xử lý API cho chính xác
-                cat <<EOF > check_temp.py
+                # Tạo file python xử lý API ngầm để đảm bảo chính xác 100%
+                cat <<EOF > check_logic.py
 import requests
-import sys
+import os
 
-try:
-    with open('check_cookie.txt', 'r') as f:
-        lines = [l.strip() for l in f.readlines() if l.strip()]
-    
-    print(f"[*] Đang quét {len(lines)} tài khoản...\n")
-    for line in lines:
-        parts = line.split(':')
-        if len(parts) < 3: continue
-        user, cookie = parts[0], parts[2]
-        try:
-            r = requests.get("https://users.roblox.com/v1/users/authenticated", 
-                             headers={"Cookie": f".ROBLOSECURITY={cookie}"}, timeout=10)
-            if r.status_code == 200:
-                print(f"\033[0;32m[LIVE] {user} - Còn sống! ✅\033[0m")
-            else:
-                print(f"\033[0;31m[DIE]  {user} - Đã ngỏm! ❌\033[0m")
-        except:
-            print(f"\033[0;33m[LỖI]  {user} - Lỗi mạng.\033[0m")
-except Exception as e:
-    print(f"Lỗi: {e}")
+def check():
+    try:
+        with open('temp_list.txt', 'r') as f:
+            lines = [l.strip() for l in f.readlines() if l.strip()]
+        
+        print(f"[*] Tìm thấy {len(lines)} tài khoản. Đang check qua API...")
+        for line in lines:
+            parts = line.split(':')
+            if len(parts) < 3: continue
+            user, cookie = parts[0], parts[2]
+            
+            try:
+                r = requests.get("https://users.roblox.com/v1/users/authenticated", 
+                                 headers={"Cookie": f".ROBLOSECURITY={cookie}"}, timeout=10)
+                if r.status_code == 200:
+                    print(f"\033[0;32m[LIVE] {user} - Ngon lành! ✅\033[0m")
+                else:
+                    print(f"\033[0;31m[DIE]  {user} - Đã ngỏm! ❌\033[0m")
+            except:
+                print(f"\033[0;33m[LỖI]  {user} - Lỗi kết nối.\033[0m")
+    except Exception as e:
+        print(f"Lỗi: {e}")
+
+if __name__ == "__main__":
+    check()
 EOF
-                cp "$FILE_PATH" ./check_cookie.txt
-                python3 check_temp.py
-                rm check_temp.py ./check_cookie.txt
+                # Sao chép file vào môi trường làm việc của Termux
+                cp "$FILE_PATH" ./temp_list.txt
+                python3 check_logic.py
+                # Dọn dẹp file tạm
+                rm check_logic.py temp_list.txt
             fi
             ;;
         0) exit 0 ;;
